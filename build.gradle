@@ -1,0 +1,31 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'application'
+
+
+description = 'Jar para probar servicios de IMAP y STMP en office365'
+    group = 'biz.somos'
+
+mainClassName = 'biz.somos.emailOffice365.Main'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testImplementation     'junit:junit:4.13'    
+    implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+}
+
+task buildFatJar(type: Jar) {
+    manifest{
+        attributes 'Main-Class' : 'biz.somos.emailOffice365.Main'
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    baseName = rootProject.name
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+jar.finalizedBy(buildFatJar)
+
